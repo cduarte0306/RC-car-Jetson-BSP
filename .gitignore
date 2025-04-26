@@ -1,0 +1,8 @@
+# Yocto build ignores
+build-jetson/tmp/
+build-jetson/sstate-cache/
+build-jetson/downloads/
+build-jetson/cache/
+build-jetson/bitbake-cookerdaemon.log
+*.swp
+*.log
