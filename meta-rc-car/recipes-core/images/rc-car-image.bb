@@ -15,11 +15,26 @@ IMAGE_INSTALL += " \
     dnsmasq \
     net-tools \
     systemd \
+    opencv \
+    opencv-samples \
+    rc-car-wifi-setup \
+    rc-car-eth-setup \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-plugins-tegra \
+    gstreamer1.0-plugins-tegra-binaryonly \
+    gdbserver \
 "
 
 # Output a WIC image compressed with gzip
 IMAGE_CLASSES += "image_types_tegra"
 IMAGE_FSTYPES = "tegraflash wic.gz"
+
+LICENSE_FLAGS_ACCEPTED += "commercial"
 
 # Files to include in the boot partition
 IMAGE_BOOT_FILES = " \
