@@ -17,7 +17,6 @@ IMAGE_INSTALL += " \
     systemd \
     opencv \
     opencv-samples \
-    rc-car-wifi-setup \
     rc-car-eth-setup \
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
