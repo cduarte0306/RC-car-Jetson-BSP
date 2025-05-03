@@ -8,11 +8,24 @@
         target = <&spi1>;
         __overlay__ {
             status = "okay";
+        };
+    };
 
+    fragment@1 {
+        target = <&hdr40_spi1>;
+        __overlay__ {
+            status = "okay";
+        };
+    };
+
+    fragment@2 {
+        target = <&spi1>;
+        __overlay__ {
             spidev@0 {
                 compatible = "spidev";
                 reg = <0>;
-                spi-max-frequency = <25000000>;
+                spi-max-frequency = <10000000>;
+                status = "okay";
             };
         };
     };

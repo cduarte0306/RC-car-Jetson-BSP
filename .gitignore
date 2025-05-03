@@ -6,3 +6,6 @@ build-jetson/cache/
 build-jetson/bitbake-cookerdaemon.log
 *.swp
 *.log
+*.lock
+*.sock*
+/.vscode

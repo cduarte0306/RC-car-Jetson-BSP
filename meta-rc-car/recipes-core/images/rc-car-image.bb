@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
     hostapd \
     dnsmasq \
     net-tools \
+    procps \
     systemd \
     opencv \
     opencv-samples \
@@ -27,25 +28,27 @@ IMAGE_INSTALL += " \
     gstreamer1.0-plugins-tegra \
     gstreamer1.0-plugins-tegra-binaryonly \
     gdbserver \
+    boost \
 "
 
-# Output a WIC image compressed with gzip
-IMAGE_CLASSES += "image_types_tegra"
-IMAGE_FSTYPES = "tegraflash wic.gz"
+TOOLCHAIN_TARGET_TASK:append = " boost"
 
+# Tegra-specific image types
+IMAGE_CLASSES += "image_types_tegra"
+IMAGE_FSTYPES = "tegraflash"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
-# Files to include in the boot partition
+# Boot partition contents
 IMAGE_BOOT_FILES = " \
     Image;Image \
     tegra210-p3448-0000-p3449-0000-b00.dtb;tegra210-p3448-0000-p3449-0000-b00.dtb \
-    extlinux.conf \
+    extlinux.conf;extlinux/extlinux.conf \
 "
-WKS_FILE = "rc-car-wic.wks"
-WKS_FILES_DIR = "${LAYERDIR}/wic"
 
-# Stage extlinux.conf into DEPLOY_DIR_IMAGE so WIC can use it
-python do_image_wic:append() {
-    import shutil
-    shutil.copyfile("${THISDIR}/extlinux.conf", "${DEPLOY_DIR_IMAGE}/extlinux.conf")
+# Copy extlinux.conf from layer's files/ directory into boot partition
+SRC_URI += "file://extlinux.conf"
+
+do_install:append() {
+    install -d ${D}/boot/extlinux
+    install -m 0644 ${WORKDIR}/extlinux.conf ${D}/boot/extlinux/extlinux.conf
 }
