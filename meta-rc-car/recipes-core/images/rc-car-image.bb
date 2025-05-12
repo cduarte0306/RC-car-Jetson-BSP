@@ -28,6 +28,7 @@ IMAGE_INSTALL += " \
     gstreamer1.0-plugins-tegra-binaryonly \
     gdbserver \
     boost \
+    spidev-test \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
