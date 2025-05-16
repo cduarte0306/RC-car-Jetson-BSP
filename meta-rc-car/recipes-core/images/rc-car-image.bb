@@ -28,6 +28,8 @@ IMAGE_INSTALL += " \
     gstreamer1.0-plugins-tegra-binaryonly \
     gdbserver \
     boost \
+    dtc \
+    spidev-test \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
@@ -36,10 +38,11 @@ IMAGE_CLASSES += "image_types_tegra"
 IMAGE_FSTYPES = "tegraflash"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
+KERNEL_MODULE_AUTOLOAD:append = " spidev"
+
 IMAGE_BOOT_FILES += " \
     Image;Image \
-    tegra210-p3448-0000-p3449-0000-b00.dtb \
-    rc-car-spi-overlay.dtbo \
+    tegra210-p3448-0000-p3449-0000-a02.dtb \
 "
 
 python do_create_extlinux_conf() {
