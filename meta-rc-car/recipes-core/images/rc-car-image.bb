@@ -7,8 +7,6 @@ IMAGE_INSTALL += " \
     packagegroup-core-boot \
     bash \
     openssh \
-    linux-firmware-mt7601u \
-    kernel-module-mt7601u \
     nano \
     hostapd \
     dnsmasq \

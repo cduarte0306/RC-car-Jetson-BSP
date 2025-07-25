@@ -5,8 +5,6 @@ PR = "r0"
 
 SRC_URI = "file://20-eth0.network"
 
-S = "${WORKDIR}"
-
 inherit systemd
 
 do_install() {
