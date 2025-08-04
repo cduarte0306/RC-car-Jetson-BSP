@@ -37,11 +37,8 @@ IMAGE_FSTYPES = "tegraflash"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD:append = " spidev"
-
-IMAGE_BOOT_FILES += " \
-    Image;Image \
-    tegra210-p3448-0000-p3449-0000-a02.dtb \
-"
+KERNEL_DEVICETREE_APPLY_OVERLAYS = "tegra234-p3767-0000-p3509-a02-hdr40.dtbo"
+CORE_IMAGE_EXTRA_INSTALL = "kernel-module-spidev spidev-test"
 
 python do_create_extlinux_conf() {
     import os
