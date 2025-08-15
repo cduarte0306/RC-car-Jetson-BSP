@@ -10,12 +10,15 @@ IMAGE_INSTALL += " \
     nano \
     hostapd \
     dnsmasq \
+    iproute2 \
+    ethtool \
     net-tools \
+    tcpdump \
     procps \
     systemd \
+    busybox \
     opencv \
     opencv-samples \
-    rc-car-eth-setup \
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
@@ -27,19 +30,32 @@ IMAGE_INSTALL += " \
     gdbserver \
     boost \
     dtc \
-    ethtool \ 
-    iproute2 \
-    net-tools \
-    tcpdump \
-    busybox \
+    nodejs \
+    networkmanager \
+    networkmanager-nmcli \
+    wpa-supplicant \
+    iw \
+    wireless-regdb-static \
+    linux-firmware \
+    rc-car-eth-setup \
+    python3 \
 "
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
 
+DISTRO_FEATURES:append = " systemd usrmerge"
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+
+LICENSE_FLAGS_ACCEPTED += "commercial"
+
 IMAGE_CLASSES += "image_types_tegra"
-IMAGE_FSTYPES = "tegraflash"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD += "spidev"
-TEGRA_PLUGIN_MANAGER_OVERLAYS:append  = " tegra234-p3767-0000+p3509-a02-hdr40.dtbo"
-IMAGE_INSTALL:append= " kernel-module-spidev spidev-test "
+TEGRA_PLUGIN_MANAGER_OVERLAYS:append = " tegra234-p3767-0000+p3509-a02-hdr40.dtbo"
+IMAGE_INSTALL:append = " kernel-module-spidev spidev-test"
+
+# Enable NM at boot
+SYSTEMD_AUTO_ENABLE:append = " NetworkManager"

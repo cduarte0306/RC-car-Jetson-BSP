@@ -8,6 +8,9 @@ SRC_URI = "file://20-enP8p1s0.network\
 
 inherit systemd
 
+# Ensure the build system can locate the files directory
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
 do_install() {
     install -d ${D}${sysconfdir}/systemd/network
     install -m 0644 ${WORKDIR}/20-enP8p1s0.network ${D}${sysconfdir}/systemd/network/
