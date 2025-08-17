@@ -10,6 +10,3 @@
 	path = layers/poky
 	url = https://git.yoctoproject.org/git/poky
 	branch = kirkstone
-[submodule "meta-tegra-community"]
-	path = meta-tegra-community
-	url = https://github.com/OE4T/meta-tegra-community.git

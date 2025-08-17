@@ -41,6 +41,7 @@ IMAGE_INSTALL += " \
     libgpiod-tools \
     python3 \
     python3-flask \
+    python3-gunicorn \
 "
 IMAGE_CLASSES += "image_types_tegra"
 IMAGE_FSTYPES = "tegraflash"
