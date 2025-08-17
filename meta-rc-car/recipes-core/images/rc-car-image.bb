@@ -30,7 +30,6 @@ IMAGE_INSTALL += " \
     gdbserver \
     boost \
     dtc \
-    nodejs \
     networkmanager \
     networkmanager-nmcli \
     wpa-supplicant \
@@ -38,15 +37,15 @@ IMAGE_INSTALL += " \
     wireless-regdb-static \
     linux-firmware \
     rc-car-eth-setup \
+    libgpiod \
+    libgpiod-tools \
     python3 \
+    python3-flask \
 "
+IMAGE_CLASSES += "image_types_tegra"
+IMAGE_FSTYPES = "tegraflash"
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
-
-DISTRO_FEATURES:append = " systemd usrmerge"
-DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
-VIRTUAL-RUNTIME_init_manager = "systemd"
-VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
 
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
