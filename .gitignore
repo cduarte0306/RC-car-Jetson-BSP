@@ -1,9 +1,5 @@
 # Yocto build ignores
-build/tmp/
-build/sstate-cache/
-build/downloads/
-build/cache/
-build/bitbake-cookerdaemon.log
+build/
 *.swp
 *.log
 *.lock

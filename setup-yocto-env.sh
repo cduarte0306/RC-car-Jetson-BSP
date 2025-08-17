@@ -1,3 +1,22 @@
+#!/bin/bash
+
+# Source the Yocto environment
+if [ -f "layers/poky/oe-init-build-env" ]; then
+    source layers/poky/oe-init-build-env build
+else
+    # Pull all the necessary layers
+    git submodule update --init --recursive
+    
+    if [ -f "poky/oe-init-build-env" ]; then
+        source layers/poky/oe-init-build-env build
+    else
+        echo "Error: Could not find poky/oe-init-build-env. Ensure you are in the correct directory."
+        exit 1
+    fi
+fi
+
+# Configure local.conf with the current settings
+cat <<EOL > conf/local.conf
 #
 # This file is your local configuration file and is where all local user settings
 # are placed. The comments in this file give some guide to the options a new user
@@ -309,3 +328,7 @@ IMAGE_INSTALL:append = " kernel-module-spidev spidev-test"
 # Parallel build settings (adjust based on your host)
 BB_NUMBER_THREADS ?= "16"
 PARALLEL_MAKE ?= "-j16"
+EOL
+
+# Notify the user
+echo "Yocto environment setup complete and local.conf configured."
