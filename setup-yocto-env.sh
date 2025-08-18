@@ -54,6 +54,7 @@ BBLAYERS ?= " \
   ${TOPDIR}/../layers/meta-openembedded/meta-python \
   ${TOPDIR}/../layers/meta-tegra \
   ${TOPDIR}/../layers/meta-rc-car \
+  ${TOPDIR}/../layers/meta-swupdate \
 "
 EOF
 
