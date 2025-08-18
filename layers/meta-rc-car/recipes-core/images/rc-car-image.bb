@@ -54,7 +54,6 @@ IMAGE_CLASSES += "image_types_tegra"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD += "spidev"
-TEGRA_PLUGIN_MANAGER_OVERLAYS:append = " tegra234-p3767-0000+p3509-a02-hdr40.dtbo"
 IMAGE_INSTALL:append = " kernel-module-spidev spidev-test"
 
 # Enable NM at boot
