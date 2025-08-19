@@ -42,9 +42,11 @@ IMAGE_INSTALL += " \
     python3 \
     python3-flask \
     python3-gunicorn \
+    swupdate \
+    kernel-module-spidev \
+    spidev-test \
 "
 IMAGE_CLASSES += "image_types_tegra"
-IMAGE_FSTYPES = "tegraflash"
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
 
@@ -54,7 +56,9 @@ IMAGE_CLASSES += "image_types_tegra"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD += "spidev"
-IMAGE_INSTALL:append = " kernel-module-spidev spidev-test"
+
+IMAGE_FSTYPES:append = " tar.gz"
+IMAGE_FSTYPES:append = " tegraflash"
 
 # Enable NM at boot
 SYSTEMD_AUTO_ENABLE:append = " NetworkManager"
