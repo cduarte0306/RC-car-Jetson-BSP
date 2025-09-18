@@ -46,6 +46,16 @@ IMAGE_INSTALL += " \
     kernel-module-spidev \
     spidev-test \
 "
+# Python images
+IMAGE_INSTALL:append = " \
+  python3-core \
+  python3-flask \
+  python3-werkzeug \
+  python3-jinja2 \
+  python3-itsdangerous \
+  python3-click \
+  "
+
 IMAGE_CLASSES += "image_types_tegra"
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
@@ -62,3 +72,4 @@ IMAGE_FSTYPES:append = " tegraflash"
 
 # Enable NM at boot
 SYSTEMD_AUTO_ENABLE:append = " NetworkManager"
+TOOLCHAIN_TARGET_TASK:append = " swupdate-dev"
