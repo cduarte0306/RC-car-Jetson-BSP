@@ -10,3 +10,6 @@
 	path = layers/poky
 	url = https://git.yoctoproject.org/git/poky
 	branch = scarthgap
+[submodule "layers/meta-swupdate"]
+	path = layers/meta-swupdate
+	url = https://github.com/sbabic/meta-swupdate

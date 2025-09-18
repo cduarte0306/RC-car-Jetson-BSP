@@ -9,4 +9,7 @@ This project is to show-case the use of a Linux SBC to implement machine vision 
 
 # Build sdk
 `bitbake rc-car-image -c populate_sdk`
+
+# Build update image
+`bitbake swupdate-image-tegra`
  
