@@ -1,0 +1,14 @@
+[connection]
+id=static-enP8p1s0
+type=ethernet
+interface-name=enP8p1s0
+autoconnect=true
+
+[ipv4]
+method=manual
+address1=192.168.1.10/24,192.168.1.1
+dns=8.8.8.8;
+ignore-auto-dns=true
+
+[ipv6]
+method=ignore
