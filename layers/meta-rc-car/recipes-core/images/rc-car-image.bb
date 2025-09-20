@@ -45,7 +45,7 @@ IMAGE_INSTALL += " \
     swupdate \
     kernel-module-spidev \
     spidev-test \
-    udpater-server \
+    update-server \
     update-web-server \
 "
 # Python images

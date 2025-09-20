@@ -1,0 +1,11 @@
+[Unit]
+Description=RC Car Update Web Server
+After=rc-car-updater.service
+Requires=rc-car-updater.service
+
+[Service]
+ExecStart=python3 /opt/rc-car/web-server/rc-config-server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

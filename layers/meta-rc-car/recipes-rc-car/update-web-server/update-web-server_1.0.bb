@@ -9,14 +9,15 @@ SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;bra
 S = "${WORKDIR}/git"
 
 # Assume this runs with Python 3 and uses the standard interpreter
-RDEPENDS:${PN} += "python3"
+RDEPENDS:${PN} += "python3 bash"
 
 inherit systemd
 
 do_install() {
     # Install the Python script and web files
     install -d ${D}/opt/rc-car/web-server
-    cp -r ${S}/* ${D}/opt/rc-car/web-server/
+    install -d ${D}/home/images/
+    cp -r ${S}/src/* ${D}/opt/rc-car/web-server/
 
     # Install the systemd service
     install -d ${D}${systemd_system_unitdir}
@@ -25,5 +26,6 @@ do_install() {
 
 FILES:${PN} += "/opt/rc-car/web-server/"
 FILES:${PN} += "${systemd_system_unitdir}/rc-car-web-server.service"
+FILES:${PN} += "/home/images"
 
 SYSTEMD_SERVICE:${PN} = "rc-car-web-server.service"
