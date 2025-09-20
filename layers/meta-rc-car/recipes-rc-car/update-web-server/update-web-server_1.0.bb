@@ -3,7 +3,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 SRCREV = "${AUTOREV}"
-SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;branch=7-add-software-upgrade-dropbox \
+SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;branch=main \
            file://rc-car-web-server.service"
 
 S = "${WORKDIR}/git"
