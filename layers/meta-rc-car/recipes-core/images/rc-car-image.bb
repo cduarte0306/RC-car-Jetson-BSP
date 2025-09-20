@@ -45,6 +45,8 @@ IMAGE_INSTALL += " \
     swupdate \
     kernel-module-spidev \
     spidev-test \
+    update-server \
+    update-web-server \
 "
 # Python images
 IMAGE_INSTALL:append = " \
@@ -73,3 +75,5 @@ IMAGE_FSTYPES:append = " tegraflash"
 # Enable NM at boot
 SYSTEMD_AUTO_ENABLE:append = " NetworkManager"
 TOOLCHAIN_TARGET_TASK:append = " swupdate-dev"
+
+SYSTEMD_AUTO_ENABLE:append = " NetworkManager-wait-online.service"
