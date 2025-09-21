@@ -14,17 +14,45 @@ inherit cmake pkgconfig systemd
 
 EXTRA_OECMAKE = ""
 
+python do_extract_version() {
+    import os
+    import re
+
+    version = "0.0.0"
+    version_file = os.path.join(d.getVar('S'), 'version.hpp')
+    if not os.path.exists(version_file):
+        bb.warn("Version file not found: %s" % version_file)
+    else:
+        major = minor = build = None
+        with open(version_file, 'r') as f:
+            for line in f:
+                if "#define VERSION_MAJOR" in line:
+                    major = re.search(r'\d+', line).group()
+                elif "#define VERSION_MINOR" in line:
+                    minor = re.search(r'\d+', line).group()
+                elif "#define VERSION_BUILD" in line:
+                    build = re.search(r'\d+', line).group()
+        if major and minor and build:
+            version = f"{major}.{minor}.{build}"
+
+    d.setVar("RC_CAR_VERSION", version)
+}
+
+addtask extract_version after do_unpack before do_configure
+
 do_install() {
-    # Install binary
     install -d ${D}/opt/rc-car/update-server
     install -m 0755 ${B}/src/rc-car-updater ${D}/opt/rc-car/update-server/
 
-    # Install systemd service
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/rc-car-updater.service ${D}${systemd_system_unitdir}/
+
+    install -d ${D}${sysconfdir}/rc-car/versions
+    echo "OE: ${RC_CAR_VERSION}" > ${D}${sysconfdir}/rc-car/versions/updater-version.txt
 }
 
 FILES:${PN} += "/opt/rc-car/update-server/"
 FILES:${PN} += "${systemd_system_unitdir}/rc-car-updater.service"
+FILES:${PN} += "${sysconfdir}/rc-car/versions/updater-version.txt"
 
 SYSTEMD_SERVICE:${PN} = "rc-car-updater.service"
