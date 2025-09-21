@@ -58,7 +58,7 @@ IMAGE_INSTALL:append = " \
   python3-click \
   "
 
-IMAGE_INSTALL:append = " rc-car-version"
+IMAGE_INSTALL:append = " version"
 
 IMAGE_CLASSES += "image_types_tegra"
 

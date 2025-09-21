@@ -19,7 +19,7 @@ python do_extract_version() {
     import re
 
     version = "0.0.0"
-    version_file = os.path.join(d.getVar('S'), 'version.hpp')
+    version_file = os.path.join(d.getVar('S'), 'version.h')
     if not os.path.exists(version_file):
         bb.warn("Version file not found: %s" % version_file)
     else:
@@ -34,7 +34,6 @@ python do_extract_version() {
                     build = re.search(r'\d+', line).group()
         if major and minor and build:
             version = f"{major}.{minor}.{build}"
-
     d.setVar("RC_CAR_VERSION", version)
 }
 
@@ -47,12 +46,13 @@ do_install() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/rc-car-updater.service ${D}${systemd_system_unitdir}/
 
-    install -d ${D}${sysconfdir}/rc-car/versions
-    echo "OE: ${RC_CAR_VERSION}" > ${D}${sysconfdir}/rc-car/versions/updater-version.txt
+    install -d ${D}${sysconfdir}/versions
+    echo "${RC_CAR_VERSION}" > ${D}${sysconfdir}/versions/updater-version.txt
 }
 
 FILES:${PN} += "/opt/rc-car/update-server/"
 FILES:${PN} += "${systemd_system_unitdir}/rc-car-updater.service"
-FILES:${PN} += "${sysconfdir}/rc-car/versions/updater-version.txt"
+FILES:${PN} += "${sysconfdir}/rc-car/versions/update-server-version.txt"
 
 SYSTEMD_SERVICE:${PN} = "rc-car-updater.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
