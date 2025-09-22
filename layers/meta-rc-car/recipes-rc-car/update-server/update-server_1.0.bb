@@ -22,7 +22,7 @@ do_install() {
     install -m 0644 ${WORKDIR}/rc-car-updater.service ${D}${systemd_system_unitdir}/
 
     # Log directory
-    install -d {D}/var/log/rc-car-updater/
+    install -d {D}/var/log/
 
     install -d ${D}${sysconfdir}/versions
     version_file=${S}/version.h
@@ -40,7 +40,8 @@ do_install() {
 
 FILES:${PN} += "/opt/rc-car/update-server/"
 FILES:${PN} += "${systemd_system_unitdir}/rc-car-updater.service"
-FILES:${PN} += "${sysconfdir}/rc-car/versions/updater-version.txt"
+FILES:${PN} += "${sysconfdir}/versions/updater-version.txt"
+FILES:${PN} += "/var/log/rc-car-updater/"
 
 SYSTEMD_SERVICE:${PN} = "rc-car-updater.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
