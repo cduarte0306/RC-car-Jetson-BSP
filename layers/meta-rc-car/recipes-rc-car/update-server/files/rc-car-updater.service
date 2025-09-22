@@ -5,6 +5,8 @@ Wants=network-online.target
 
 [Service]
 ExecStart=/opt/rc-car/update-server/rc-car-updater
+StandardOutput=append:/var/log/myapp/myapp.log
+StandardError=append:/var/log/myapp/myapp.err
 Restart=always
 
 [Install]
