@@ -4,26 +4,34 @@ LICENSE = "MIT"
 require versions.inc
 inherit rc-car-update-type
 
-# Safe default values to avoid basehash mismatch
-VERSION := "OE: ${OE_VERSION}"
+# ✅ These MUST be static for BitBake to work
+VERSION := "${OE_VERSION}"
 IMAGE_NAME = "rc-car-update-${MACHINE}-${VERSION}"
 SWUPDATE_OUTPUTIMAGE = "${IMAGE_NAME}.swu"
 
-# Override dynamically inside the task (safe way)
-python do_swuimage:prepend() {
+# ✅ Create timestamped copy AFTER the .swu is built
+python do_timestamped_swu_copy() {
+    import os
     import datetime
 
-    # Create timestamp string
+    deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
+    orig_filename = d.getVar('SWUPDATE_OUTPUTIMAGE')
+    version = d.getVar('OE_VERSION').replace(" ", "_").replace(":", "_")
+    machine = d.getVar('MACHINE')
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M")
 
-    # Clean up version string (remove spaces or colons)
-    version = d.getVar("VERSION").replace(" ", "_").replace(":", "_")
-    machine = d.getVar("MACHINE")
+    timestamped_filename = f"rc-car-update-{machine}-{version}-{timestamp}.swu"
+    src = os.path.join(deploy_dir, orig_filename)
+    dst = os.path.join(deploy_dir, timestamped_filename)
 
-    # Override IMAGE_NAME and SWUPDATE_OUTPUTIMAGE at runtime
-    image_name = f"rc-car-update-{machine}-{version}-{timestamp}"
-    d.setVar("IMAGE_NAME", image_name)
-    d.setVar("SWUPDATE_OUTPUTIMAGE", f"{image_name}.swu")
+    bb.note(f"[rc-car-update] Copying {src} -> {dst}")
+    bb.utils.copyfile(src, dst)
 
-    bb.note(f"[rc-car-update-image] Final SWUpdate image: {image_name}.swu")
+    latest_link = os.path.join(deploy_dir, "latest.swu")
+    if os.path.islink(latest_link) or os.path.exists(latest_link):
+        os.remove(latest_link)
+    os.symlink(timestamped_filename, latest_link)
+    bb.note(f"[rc-car-update] Created symlink: latest.swu -> {timestamped_filename}")
 }
+
+addtask timestamped_swu_copy after do_swuimage

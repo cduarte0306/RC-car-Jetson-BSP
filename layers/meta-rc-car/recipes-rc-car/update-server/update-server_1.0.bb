@@ -15,16 +15,32 @@ inherit cmake pkgconfig systemd
 EXTRA_OECMAKE = ""
 
 do_install() {
-    # Install binary
     install -d ${D}/opt/rc-car/update-server
     install -m 0755 ${B}/src/rc-car-updater ${D}/opt/rc-car/update-server/
 
-    # Install systemd service
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/rc-car-updater.service ${D}${systemd_system_unitdir}/
+
+    # Log directory
+    install -d {D}/var/log/rc-car-updater/
+
+    install -d ${D}${sysconfdir}/versions
+    version_file=${S}/version.h
+    if [ -f "$version_file" ]; then
+        major=$(grep '#define VERSION_MAJOR' $version_file | awk '{print $3}')
+        minor=$(grep '#define VERSION_MINOR' $version_file | awk '{print $3}')
+        build=$(grep '#define VERSION_BUILD' $version_file | awk '{print $3}')
+        version="${major}.${minor}.${build}"
+    else
+        version="0.0.0"
+    fi
+
+    echo "$version" > ${D}${sysconfdir}/versions/updater-version.txt
 }
 
 FILES:${PN} += "/opt/rc-car/update-server/"
 FILES:${PN} += "${systemd_system_unitdir}/rc-car-updater.service"
+FILES:${PN} += "${sysconfdir}/rc-car/versions/updater-version.txt"
 
 SYSTEMD_SERVICE:${PN} = "rc-car-updater.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
