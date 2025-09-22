@@ -14,35 +14,6 @@ inherit cmake pkgconfig systemd
 
 EXTRA_OECMAKE = ""
 
-VERSION_STRING = "0.0.0"
-
-python do_extract_version() {
-    import os
-    import re
-
-    version = "0.0.0"
-    version_file = os.path.join(d.getVar('S'), 'version.h')
-    if not os.path.exists(version_file):
-        bb.warn("Version file not found: %s" % version_file)
-    else:
-        major = minor = build = None
-        with open(version_file, 'r') as f:
-            for line in f:
-                if "#define VERSION_MAJOR" in line:
-                    major = re.search(r'\d+', line).group()
-                elif "#define VERSION_MINOR" in line:
-                    minor = re.search(r'\d+', line).group()
-                elif "#define VERSION_BUILD" in line:
-                    build = re.search(r'\d+', line).group()
-        if major and minor and build:
-            version = f"{major}.{minor}.{build}"
-
-    bb.warn(f"Extracted version: {version}")
-    VERSION_STRING = version
-}
-
-addtask extract_version after do_unpack before do_configure
-
 do_install() {
     install -d ${D}/opt/rc-car/update-server
     install -m 0755 ${B}/src/rc-car-updater ${D}/opt/rc-car/update-server/
@@ -54,8 +25,17 @@ do_install() {
     install -d {D}/var/log/rc-car-updater/
 
     install -d ${D}${sysconfdir}/versions
-    echo "Version : ${VERSION_STRING}"
-    echo "${VERSION_STRING}" > ${D}${sysconfdir}/versions/updater-version.txt
+    version_file=${S}/version.h
+    if [ -f "$version_file" ]; then
+        major=$(grep '#define VERSION_MAJOR' $version_file | awk '{print $3}')
+        minor=$(grep '#define VERSION_MINOR' $version_file | awk '{print $3}')
+        build=$(grep '#define VERSION_BUILD' $version_file | awk '{print $3}')
+        version="${major}.${minor}.${build}"
+    else
+        version="0.0.0"
+    fi
+
+    echo "$version" > ${D}${sysconfdir}/versions/updater-version.txt
 }
 
 FILES:${PN} += "/opt/rc-car/update-server/"
