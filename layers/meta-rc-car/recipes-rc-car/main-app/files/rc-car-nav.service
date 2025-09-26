@@ -1,0 +1,13 @@
+[Unit]
+Description=RC Car Navigation App
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/rc-car/rc-car-nav/rc-car-nav
+StandardOutput=append:/var/log/rc-car-nav.log
+StandardError=append:/var/log/rc-car-nav.err
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
