@@ -47,6 +47,7 @@ IMAGE_INSTALL += " \
     spidev-test \
     update-server \
     update-web-server \
+    rc-car-nav \
 "
 # Python images
 IMAGE_INSTALL:append = " \
