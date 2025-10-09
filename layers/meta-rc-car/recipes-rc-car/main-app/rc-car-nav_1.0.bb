@@ -1,4 +1,4 @@
-SUMMARY = "Update server for RC car"
+UMMARY = "Update server for RC car"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c6808d7433e09d2b717e8d022fd743f3"
 
@@ -8,7 +8,7 @@ SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;prot
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake-native boost"
+DEPENDS = "cmake-native boost systemd"
 
 inherit cmake pkgconfig systemd
 

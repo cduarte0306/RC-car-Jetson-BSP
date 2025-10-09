@@ -2,43 +2,18 @@
 /plugin/;
 
 / {
-    compatible = "nvidia,p3767-0000+p3509-a02", "nvidia,tegra234";
+    compatible = "nvidia,p3768-0000+p3767-0005", "nvidia,tegra234";
 
     fragment@0 {
-        target-path = "/tegra_pinctrl";
+        target = <&spi1>;
         __overlay__ {
-            spi1_pins_drive: pinmux@0 {
-                spi1_sck_pz3 {
-                    nvidia,pins = "spi1_sck_pz3";
-                    nvidia,function = "spi1";
-                    nvidia,drive-strength = <3>;   /* strongest */
-                    nvidia,slew-rate = <0>;        /* fastest */
-                };
-                spi1_miso_pz4 {
-                    nvidia,pins = "spi1_miso_pz4";
-                    nvidia,function = "spi1";
-                    nvidia,drive-strength = <3>;
-                    nvidia,slew-rate = <0>;
-                };
-                spi1_mosi_pz5 {
-                    nvidia,pins = "spi1_mosi_pz5";
-                    nvidia,function = "spi1";
-                    nvidia,drive-strength = <3>;
-                    nvidia,slew-rate = <0>;
-                };
-                spi1_cs0_pz6 {
-                    nvidia,pins = "spi1_cs0_pz6";
-                    nvidia,function = "spi1";
-                    nvidia,drive-strength = <3>;
-                    nvidia,slew-rate = <0>;
-                };
-                spi1_cs1_pz7 {
-                    nvidia,pins = "spi1_cs1_pz7";
-                    nvidia,function = "spi1";
-                    nvidia,drive-strength = <3>;
-                    nvidia,slew-rate = <0>;
-                };
-            };
+            /* 
+             * Re-parent SPI1 to a slower PLLP clock source
+             * so user space can request <3 MHz SPI speeds.
+             */
+            assigned-clocks = <&tegra_car TEGRA234_CLK_SPI1>;
+            assigned-clock-parents = <&tegra_car TEGRA234_CLK_PLLP_OUT0>;
+            assigned-clock-rates = <12000000>; /* 12 MHz parent clock */
         };
     };
 };

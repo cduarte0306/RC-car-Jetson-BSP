@@ -1,0 +1,15 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "nvidia,p3768-0000+p3767-0005", "nvidia,tegra234";
+
+    fragment@0 {
+        target-path = "/bus@0/spi@3210000";
+        __overlay__ {
+            assigned-clocks = <&tegra_car 135>;
+            assigned-clock-parents = <&tegra_car 102>;
+            assigned-clock-rates = <12000000>;
+        };
+    };
+};
