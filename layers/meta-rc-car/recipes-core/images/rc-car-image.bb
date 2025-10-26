@@ -80,10 +80,6 @@ KERNEL_MODULE_AUTOLOAD += "spidev"
 IMAGE_FSTYPES:append = " tar.gz"
 IMAGE_FSTYPES:append = " tegraflash"
 
-UBOOT_EXTLINUX = "1"
-UBOOT_EXTLINUX_FDT = "${DTBFILE}"
-UBOOT_EXTLINUX_FDTOVERLAYS = "my-overlay.dtbo"
-
 # Enable NM at boot
 SYSTEMD_AUTO_ENABLE:append = " NetworkManager"
 TOOLCHAIN_TARGET_TASK:append = " swupdate-dev"
