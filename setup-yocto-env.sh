@@ -85,7 +85,6 @@ CONF_VERSION = "2"
 
 # Jetson-specific overlays and modules
 KERNEL_MODULE_AUTOLOAD += "spidev"
-TEGRA_PLUGIN_MANAGER_OVERLAYS:append = " tegra234-p3767-0000+p3509-a02-hdr40.dtbo"
 IMAGE_INSTALL:append = " kernel-module-spidev spidev-test"
 
 # Parallelism

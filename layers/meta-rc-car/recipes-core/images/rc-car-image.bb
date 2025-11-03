@@ -3,6 +3,12 @@ LICENSE = "MIT"
 
 inherit core-image
 
+IMAGE_INSTALL::append = " \
+    rc-car-nav \
+    update-server \
+    update-web-server \
+    "
+
 IMAGE_INSTALL += " \
     packagegroup-core-boot \
     bash \
@@ -48,16 +54,15 @@ IMAGE_INSTALL += " \
     update-server \
     update-web-server \
     rc-car-nav \
+    python3-core \
+    python3-flask \
+    python3-werkzeug \
+    python3-jinja2 \
+    python3-itsdangerous \
+    python3-click \
+    avahi-daemon \
+    avahi-utils \
 "
-# Python images
-IMAGE_INSTALL:append = " \
-  python3-core \
-  python3-flask \
-  python3-werkzeug \
-  python3-jinja2 \
-  python3-itsdangerous \
-  python3-click \
-  "
 
 IMAGE_INSTALL:append = " version"
 
