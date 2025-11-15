@@ -1,0 +1,246 @@
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index c566e52075f1..fb0b3d2a37e5 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -36,10 +36,13 @@
+  *	-EINVAL is returned.
+  */
+ 
++#include <linux/cdev.h>
+ #include <linux/clk.h>
++#include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/pm_opp.h>
+@@ -49,6 +52,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/reset.h>
++#include <linux/uaccess.h>
+ 
+ #include <soc/tegra/common.h>
+ 
+@@ -58,6 +62,15 @@
+ #define PWM_SCALE_WIDTH	13
+ #define PWM_SCALE_SHIFT	0
+ 
++/* ioctl commands for PWM character device */
++#define TEGRA_PWM_IOC_MAGIC		'P'
++#define TEGRA_PWM_IOC_GET_DUTY		_IOR(TEGRA_PWM_IOC_MAGIC, 0, unsigned int)
++#define TEGRA_PWM_IOC_SET_DUTY		_IOW(TEGRA_PWM_IOC_MAGIC, 1, unsigned int)
++#define TEGRA_PWM_IOC_GET_FREQ		_IOR(TEGRA_PWM_IOC_MAGIC, 2, unsigned int)
++#define TEGRA_PWM_IOC_SET_FREQ		_IOW(TEGRA_PWM_IOC_MAGIC, 3, unsigned int)
++#define TEGRA_PWM_IOC_ENABLE		_IO(TEGRA_PWM_IOC_MAGIC, 4)
++#define TEGRA_PWM_IOC_DISABLE		_IO(TEGRA_PWM_IOC_MAGIC, 5)
++
+ struct tegra_pwm_soc {
+ 	unsigned int num_channels;
+ 
+@@ -78,6 +91,11 @@ struct tegra_pwm_chip {
+ 	void __iomem *regs;
+ 
+ 	const struct tegra_pwm_soc *soc;
++
++	/* Character device fields */
++	struct cdev cdev;
++	dev_t devt;
++	int instance;
+ };
+ 
+ static inline struct tegra_pwm_chip *to_tegra_pwm_chip(struct pwm_chip *chip)
+@@ -242,6 +260,75 @@ static void tegra_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	pm_runtime_put_sync(pc->dev);
+ }
+ 
++/* Character device ioctl handler - thread-safe */
++static long tegra_pwm_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
++{
++	struct tegra_pwm_chip *pc = filp->private_data;
++	unsigned int val;
++	u32 reg_val, duty_val;
++
++	if (_IOC_TYPE(cmd) != TEGRA_PWM_IOC_MAGIC)
++		return -ENOTTY;
++
++	switch (cmd) {
++	case TEGRA_PWM_IOC_GET_DUTY:
++		/* Get duty cycle of PWM channel 0 (in percent) */
++		if (pc->chip.npwm > 0) {
++			reg_val = pwm_readl(pc, 0);
++			val = ((reg_val >> PWM_DUTY_SHIFT) & 0xFF) * 100 / 256;
++			if (copy_to_user((void __user *)arg, &val, sizeof(val)))
++				return -EFAULT;
++		}
++		break;
++
++	case TEGRA_PWM_IOC_SET_DUTY:
++		/* Set duty cycle of PWM channel 0 (in percent, 0-100) */
++		if (copy_from_user(&val, (void __user *)arg, sizeof(val)))
++			return -EFAULT;
++		if (val > 100)
++			return -EINVAL;
++		if (pc->chip.npwm > 0) {
++			reg_val = pwm_readl(pc, 0);
++			duty_val = (val * 256 / 100) & 0xFF;
++			reg_val = (reg_val & ~(0xFF << PWM_DUTY_SHIFT)) |
++				  (duty_val << PWM_DUTY_SHIFT);
++			pwm_writel(pc, 0, reg_val);
++			dev_dbg(pc->dev, "Set duty cycle to %u%% (reg=0x%x)\n", val, reg_val);
++		}
++		break;
++
++	case TEGRA_PWM_IOC_ENABLE:
++		/* Enable PWM channel 0 */
++		if (pc->chip.npwm > 0) {
++			reg_val = pwm_readl(pc, 0);
++			reg_val |= PWM_ENABLE;
++			pwm_writel(pc, 0, reg_val);
++			dev_dbg(pc->dev, "PWM instance %d channel 0 enabled\n", pc->instance);
++		}
++		break;
++
++	case TEGRA_PWM_IOC_DISABLE:
++		/* Disable PWM channel 0 */
++		if (pc->chip.npwm > 0) {
++			reg_val = pwm_readl(pc, 0);
++			reg_val &= ~PWM_ENABLE;
++			pwm_writel(pc, 0, reg_val);
++			dev_dbg(pc->dev, "PWM instance %d channel 0 disabled\n", pc->instance);
++		}
++		break;
++
++	default:
++		return -ENOTTY;
++	}
++
++	return 0;
++}
++
++static const struct file_operations tegra_pwm_fops = {
++	.owner = THIS_MODULE,
++	.unlocked_ioctl = tegra_pwm_ioctl,
++};
++
+ static const struct pwm_ops tegra_pwm_ops = {
+ 	.config = tegra_pwm_config,
+ 	.enable = tegra_pwm_enable,
+@@ -249,6 +336,13 @@ static const struct pwm_ops tegra_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
++/* Global state for character device - protected by mutex */
++static struct class *tegra_pwm_class;
++static dev_t tegra_pwm_devt;
++static int tegra_pwm_major;
++static int tegra_pwm_instance_count;
++static DEFINE_MUTEX(tegra_pwm_dev_mutex);
++
+ static int tegra_pwm_probe(struct platform_device *pdev)
+ {
+ 	struct tegra_pwm_chip *pwm;
+@@ -318,8 +412,54 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 		goto put_pm;
+ 	}
+ 
++	/* Register character device for ioctl interface (thread-safe) */
++	mutex_lock(&tegra_pwm_dev_mutex);
++	
++	if (!tegra_pwm_class) {
++		tegra_pwm_class = class_create(THIS_MODULE, "tegra_pwm");
++		if (IS_ERR(tegra_pwm_class)) {
++			ret = PTR_ERR(tegra_pwm_class);
++			dev_err(&pdev->dev, "Failed to create device class: %d\n", ret);
++			mutex_unlock(&tegra_pwm_dev_mutex);
++			goto remove_pwm;
++		}
++		ret = alloc_chrdev_region(&tegra_pwm_devt, 0, 10, "tegra_pwm");
++		if (ret < 0) {
++			dev_err(&pdev->dev, "Failed to allocate char device region: %d\n", ret);
++			class_destroy(tegra_pwm_class);
++			tegra_pwm_class = NULL;
++			mutex_unlock(&tegra_pwm_dev_mutex);
++			goto remove_pwm;
++		}
++		tegra_pwm_major = MAJOR(tegra_pwm_devt);
++	}
++
++	/* Assign unique instance number (thread-safe under mutex) */
++	pwm->instance = tegra_pwm_instance_count++;
++	pwm->devt = MKDEV(tegra_pwm_major, pwm->instance);
++	
++	mutex_unlock(&tegra_pwm_dev_mutex);
++
++	cdev_init(&pwm->cdev, &tegra_pwm_fops);
++	pwm->cdev.owner = THIS_MODULE;
++	
++	ret = cdev_add(&pwm->cdev, pwm->devt, 1);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to add char device: %d\n", ret);
++		goto remove_pwm;
++	}
++
++	device_create(tegra_pwm_class, &pdev->dev, pwm->devt, pwm, "pwm%d", pwm->instance);
++
++	dev_info(&pdev->dev, "Tegra PWM driver loaded, major device number: %d, instance: %d\n", 
++		 tegra_pwm_major, pwm->instance);
++
+ 	return 0;
+ 
++remove_pwm:
++	pwmchip_remove(&pwm->chip);
++	reset_control_assert(pwm->rst);
++
+ put_pm:
+ 	pm_runtime_put_sync_suspend(&pdev->dev);
+ 	pm_runtime_force_suspend(&pdev->dev);
+@@ -330,6 +470,10 @@ static int tegra_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct tegra_pwm_chip *pc = platform_get_drvdata(pdev);
+ 
++	/* Remove character device */
++	device_destroy(tegra_pwm_class, pc->devt);
++	cdev_del(&pc->cdev);
++
+ 	pwmchip_remove(&pc->chip);
+ 
+ 	reset_control_assert(pc->rst);
+@@ -413,7 +557,34 @@ static struct platform_driver tegra_pwm_driver = {
+ 	.remove = tegra_pwm_remove,
+ };
+ 
+-module_platform_driver(tegra_pwm_driver);
++static int __init tegra_pwm_module_init(void)
++{
++	pr_info("tegra_pwm: Loading Tegra PWM driver module\n");
++	return platform_driver_register(&tegra_pwm_driver);
++}
++
++static void __exit tegra_pwm_module_exit(void)
++{
++	platform_driver_unregister(&tegra_pwm_driver);
++
++	/* Clean up global char device state (thread-safe under mutex) */
++	mutex_lock(&tegra_pwm_dev_mutex);
++	if (tegra_pwm_class) {
++		class_destroy(tegra_pwm_class);
++		tegra_pwm_class = NULL;
++	}
++	if (tegra_pwm_major > 0) {
++		unregister_chrdev_region(MKDEV(tegra_pwm_major, 0), 10);
++		tegra_pwm_major = 0;
++	}
++	tegra_pwm_instance_count = 0;
++	mutex_unlock(&tegra_pwm_dev_mutex);
++	
++	pr_info("tegra_pwm: Unloaded\n");
++}
++
++module_init(tegra_pwm_module_init);
++module_exit(tegra_pwm_module_exit);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Sandipan Patra <spatra@nvidia.com>");
