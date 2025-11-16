@@ -64,7 +64,7 @@
 			nvidia,function = "gp";
 			nvidia,pin-group = "pwm1";
 			nvidia,tristate = <TEGRA_PIN_DISABLE>;
-			nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+			nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 		};
 		hdr40-pin16 {
 			nvidia,pins = "spi3_cs1_py4";
@@ -154,7 +154,7 @@
 			nvidia,function = "gp";
 			nvidia,pin-group = "pwm5";
 			nvidia,tristate = <TEGRA_PIN_DISABLE>;
-			nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+			nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 		};
 		hdr40-pin35 {
 			nvidia,pins = "soc_gpio44_pi2";
