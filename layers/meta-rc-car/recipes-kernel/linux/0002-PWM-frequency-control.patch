@@ -1,0 +1,63 @@
+From fa2e48b73386b16c4fa78473bf882c2d10c187b3 Mon Sep 17 00:00:00 2001
+From: cduarte0306 <carlosduarte.molina97@gmail.com>
+Date: Sun, 16 Nov 2025 00:48:59 -0500
+Subject: [PATCH] Added frequency control
+
+---
+ drivers/pwm/pwm-tegra.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index faf615cd8dca..d3e20e42cd33 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -305,10 +305,49 @@ static long tegra_pwm_ioctl(struct file *filp, unsigned int cmd, unsigned long a
+ 			reg_val = (reg_val & ~(0xFF << PWM_DUa
+ 			pwm_writel(pc, 0, reg_val);
+-			dev_dbg(pc->dev, "Set duty cycle to %u%% (reg=0x%x)\n", val, reg_val);
+ 		}
+ 		break;
+ 
++	case TEGRA_PWM_IOC_GET_FREQ:
++	{
++		if (pc->chip.npwm > 0) {
++			u32 reg = pwm_readl(pc, 0);
++			u32 scale = reg & ((1 << PWM_SCALE_WIDTH) - 1);
++			unsigned long freq = pc->clk_rate /
++								((scale + 1) << PWM_DUTY_WIDTH);
++			if (copy_to_user((void __user *)arg, &freq, sizeof(freq)))
++				return -EFAULT;
++		}
++		break;
++	}
++
++	case TEGRA_PWM_IOC_SET_FREQ:
++	{
++		if (copy_from_user(&val, (void __user *)arg, sizeof(val)))
++			return -EFAULT;
++		if (val == 0)
++			return -EINVAL;
++
++		if (pc->chip.npwm > 0) {
++			/* Read current register values */
++			u32 reg = pwm_readl(pc, 0);
++			u32 duty_bits = (reg >> PWM_DUTY_SHIFT) & 0xFF;
++
++			/* Convert frequency to period in ns */
++			unsigned long long period_ns = div64_ul(NSEC_PER_SEC, val);
++
++			/* Convert duty_bits back to time */
++			unsigned long long duty_ns = (period_ns * duty_bits) >> 8;
++
++			struct pwm_device *pwm = &pc->chip.pwms[0];
++
++			/* Use the official Tegra path */
++			return tegra_pwm_config(&pc->chip, pwm,
++									(int)duty_ns, (int)period_ns);
++		}
++		return -ENODEV;
++	}
++
+ 	case TEGRA_PWM_IOC_ENABLE:
+ 			/* Enable PWM channel 0 using the normal driver path */
+ 			if (pc->chip.npwm > 0)
