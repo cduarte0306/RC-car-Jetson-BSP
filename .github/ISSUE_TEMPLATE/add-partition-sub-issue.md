@@ -41,5 +41,5 @@ Current partition layout from `rc-car-wic.wks`:
 - **Label:** camera
 - **Size:** 1 GB (adjustable based on requirements)
 - **Filesystem:** ext4
-- **Mount point:** /var/camera or /mnt/camera
+- **Mount point:** /mnt/camera (preferred for data storage)
 - **Alignment:** 4 MB (matching existing partitions)

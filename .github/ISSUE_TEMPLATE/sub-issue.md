@@ -13,7 +13,7 @@ assignees: ''
 
 ## Acceptance Criteria
 <!-- Define what needs to be done for this sub-issue to be considered complete -->
-- [ ] 
+- [ ] Add specific acceptance criteria here 
 
 ## Additional Context
 <!-- Add any other context, screenshots, or information about the sub-issue here -->
