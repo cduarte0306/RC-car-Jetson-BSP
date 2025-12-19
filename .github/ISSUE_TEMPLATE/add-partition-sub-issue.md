@@ -27,9 +27,11 @@ The IMX219 camera driver (parent issue #36) will need dedicated storage space fo
 - Temporary camera buffer data
 - Camera calibration data
 
-Current partition layout from `rc-car-wic.wks`:
+Current WIC partition layout from `rc-car-wic.wks`:
 - Boot partition: 16 MB (vfat)
 - Root filesystem: 2 GB (ext4)
+
+Note: The Tegra BSP also includes additional partitions managed by the bootloader (kernel, device tree, bootloader partitions) that are not defined in the WIC file.
 
 ## Related Files/Components
 - `layers/meta-rc-car/wic/rc-car-wic.wks` - Main partition layout
@@ -39,7 +41,7 @@ Current partition layout from `rc-car-wic.wks`:
 ## Proposed Partition Specifications
 - **Name:** camera-data
 - **Label:** camera
-- **Size:** 1 GB (adjustable based on requirements)
+- **Size:** 1 GB (adjustable based on requirements; sized for ~1000 high-res images or ~30 minutes of 1080p video)
 - **Filesystem:** ext4
 - **Mount point:** /mnt/camera (preferred for data storage)
 - **Alignment:** 4 MB (matching existing partitions)

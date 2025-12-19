@@ -23,7 +23,7 @@ This PR adds GitHub issue template infrastructure to enable easy creation of sub
   - Testing requirements
 - Proposed partition specifications:
   - **Name:** camera-data
-  - **Label:** camera  
+  - **Label:** camera
   - **Size:** 1 GB
   - **Filesystem:** ext4
   - **Mount point:** /mnt/camera
