@@ -1,0 +1,10 @@
+[Unit]
+Description=Runtime repartition script
+
+[Service]
+ExecStart=/usr/sbin/repartition.sh
+StandardError=append:/var/log/repartition.sh
+StandardError=append:/var/log/repartition.sh
+
+[Install]
+WantedBy=multi-user.target

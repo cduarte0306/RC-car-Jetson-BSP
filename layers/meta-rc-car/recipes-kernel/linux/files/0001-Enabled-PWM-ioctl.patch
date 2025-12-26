@@ -1,14 +1,14 @@
-From 69b6156c09463bc8be95113cb2d5dda39af03646 Mon Sep 17 00:00:00 2001
+From fec299ddf0894af7e74f770011ee0d37a5f233d4 Mon Sep 17 00:00:00 2001
 From: cduarte0306 <carlosduarte.molina97@gmail.com>
-Date: Sat, 15 Nov 2025 13:12:05 -0500
-Subject: [PATCH] Added ioctl iface
+Date: Wed, 19 Nov 2025 20:40:09 -0500
+Subject: [PATCH] Enabled PWM ioctl
 
 ---
- drivers/pwm/pwm-tegra.c | 180 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 179 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-tegra.c | 219 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 218 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index c566e52075f1..faf615cd8dca 100644
+index c566e52075f1..d3e20e42cd33 100644
 --- a/drivers/pwm/pwm-tegra.c
 +++ b/drivers/pwm/pwm-tegra.c
 @@ -36,10 +36,14 @@
@@ -62,7 +62,7 @@ index c566e52075f1..faf615cd8dca 100644
  };
  
  static inline struct tegra_pwm_chip *to_tegra_pwm_chip(struct pwm_chip *chip)
-@@ -242,6 +261,81 @@ static void tegra_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -242,6 +261,120 @@ static void tegra_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
  	pm_runtime_put_sync(pc->dev);
  }
  
@@ -110,9 +110,48 @@ index c566e52075f1..faf615cd8dca 100644
 +			reg_val = (reg_val & ~(0xFF << PWM_DUTY_SHIFT)) |
 +				  (duty_val << PWM_DUTY_SHIFT);
 +			pwm_writel(pc, 0, reg_val);
-+			dev_dbg(pc->dev, "Set duty cycle to %u%% (reg=0x%x)\n", val, reg_val);
 +		}
 +		break;
++
++	case TEGRA_PWM_IOC_GET_FREQ:
++	{
++		if (pc->chip.npwm > 0) {
++			u32 reg = pwm_readl(pc, 0);
++			u32 scale = reg & ((1 << PWM_SCALE_WIDTH) - 1);
++			unsigned long freq = pc->clk_rate /
++								((scale + 1) << PWM_DUTY_WIDTH);
++			if (copy_to_user((void __user *)arg, &freq, sizeof(freq)))
++				return -EFAULT;
++		}
++		break;
++	}
++
++	case TEGRA_PWM_IOC_SET_FREQ:
++	{
++		if (copy_from_user(&val, (void __user *)arg, sizeof(val)))
++			return -EFAULT;
++		if (val == 0)
++			return -EINVAL;
++
++		if (pc->chip.npwm > 0) {
++			/* Read current register values */
++			u32 reg = pwm_readl(pc, 0);
++			u32 duty_bits = (reg >> PWM_DUTY_SHIFT) & 0xFF;
++
++			/* Convert frequency to period in ns */
++			unsigned long long period_ns = div64_ul(NSEC_PER_SEC, val);
++
++			/* Convert duty_bits back to time */
++			unsigned long long duty_ns = (period_ns * duty_bits) >> 8;
++
++			struct pwm_device *pwm = &pc->chip.pwms[0];
++
++			/* Use the official Tegra path */
++			return tegra_pwm_config(&pc->chip, pwm,
++									(int)duty_ns, (int)period_ns);
++		}
++		return -ENODEV;
++	}
 +
 +	case TEGRA_PWM_IOC_ENABLE:
 +			/* Enable PWM channel 0 using the normal driver path */
@@ -144,7 +183,7 @@ index c566e52075f1..faf615cd8dca 100644
  static const struct pwm_ops tegra_pwm_ops = {
  	.config = tegra_pwm_config,
  	.enable = tegra_pwm_enable,
-@@ -249,6 +343,13 @@ static const struct pwm_ops tegra_pwm_ops = {
+@@ -249,6 +382,13 @@ static const struct pwm_ops tegra_pwm_ops = {
  	.owner = THIS_MODULE,
  };
  
@@ -158,7 +197,7 @@ index c566e52075f1..faf615cd8dca 100644
  static int tegra_pwm_probe(struct platform_device *pdev)
  {
  	struct tegra_pwm_chip *pwm;
-@@ -318,8 +419,54 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+@@ -318,8 +458,54 @@ static int tegra_pwm_probe(struct platform_device *pdev)
  		goto put_pm;
  	}
  
@@ -213,7 +252,7 @@ index c566e52075f1..faf615cd8dca 100644
  put_pm:
  	pm_runtime_put_sync_suspend(&pdev->dev);
  	pm_runtime_force_suspend(&pdev->dev);
-@@ -330,6 +477,10 @@ static int tegra_pwm_remove(struct platform_device *pdev)
+@@ -330,6 +516,10 @@ static int tegra_pwm_remove(struct platform_device *pdev)
  {
  	struct tegra_pwm_chip *pc = platform_get_drvdata(pdev);
  
@@ -224,7 +263,7 @@ index c566e52075f1..faf615cd8dca 100644
  	pwmchip_remove(&pc->chip);
  
  	reset_control_assert(pc->rst);
-@@ -413,7 +564,34 @@ static struct platform_driver tegra_pwm_driver = {
+@@ -413,7 +603,34 @@ static struct platform_driver tegra_pwm_driver = {
  	.remove = tegra_pwm_remove,
  };
  
@@ -260,3 +299,6 @@ index c566e52075f1..faf615cd8dca 100644
  
  MODULE_LICENSE("GPL");
  MODULE_AUTHOR("Sandipan Patra <spatra@nvidia.com>");
+-- 
+2.34.1
+

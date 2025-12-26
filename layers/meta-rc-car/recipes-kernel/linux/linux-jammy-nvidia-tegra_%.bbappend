@@ -1,4 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://pwm.cfg"
-SRC_URI += "file://0001-Added-pwm-ioctl-iface.patch"
+SRC_URI += "file://0001-PWM-ioctl.patch"
