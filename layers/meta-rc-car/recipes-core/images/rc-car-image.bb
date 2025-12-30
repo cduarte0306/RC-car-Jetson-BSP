@@ -62,6 +62,8 @@ IMAGE_INSTALL += " \
     python3-click \
     avahi-daemon \
     avahi-utils \
+    rc-car-data-init \
+    i2c-tools \
 "
 
 IMAGE_INSTALL:append = " version"

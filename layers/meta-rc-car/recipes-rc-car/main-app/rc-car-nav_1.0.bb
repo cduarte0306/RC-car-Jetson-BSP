@@ -8,7 +8,7 @@ SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;prot
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake-native boost systemd"
+DEPENDS = "cmake-native boost systemd opencv"
 
 inherit cmake pkgconfig systemd
 

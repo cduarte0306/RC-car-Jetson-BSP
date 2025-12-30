@@ -2,8 +2,11 @@ SUMMARY = "Web server for RC car"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
-SRCREV = "${AUTOREV}"
-SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;branch=main \
+# SRCREV = "${AUTOREV}"
+SRCREV = "48a7b7635fdebbdcf975d285cf392b8ae7e6241d"
+BRANCH = "19-persist-wifi-info-across-software-updates-by-checking-data-for-credentials"
+
+SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;branch=${BRANCH} \
            file://rc-car-web-server.service"
 
 S = "${WORKDIR}/git"

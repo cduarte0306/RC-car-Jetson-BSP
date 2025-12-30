@@ -2,4 +2,6 @@
 part /boot   --source bootimg-partition    --ondisk mmcblk0 --fstype=vfat --label boot  --active --align 4 --size=16
 # 2 GB rootfs partition
 part /        --source rootfs              --ondisk mmcblk0 --fstype=ext4 --label root --align 4 --size=2048
+# Persistent data partition (not updated by swupdate)
+part /data    --source empty               --ondisk mmcblk0 --fstype=ext4 --label UDA  --align 4 --size=1 --grow
 bootloader    --ptable gpt
