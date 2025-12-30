@@ -3,12 +3,6 @@ LICENSE = "MIT"
 
 inherit core-image
 
-IMAGE_INSTALL::append = " \
-    rc-car-nav \
-    update-server \
-    update-web-server \
-    "
-
 IMAGE_INSTALL += " \
     packagegroup-core-boot \
     bash \
@@ -23,16 +17,6 @@ IMAGE_INSTALL += " \
     procps \
     systemd \
     busybox \
-    opencv \
-    opencv-samples \
-    gstreamer1.0 \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-ugly \
-    gstreamer1.0-libav \
-    gstreamer1.0-plugins-tegra \
-    gstreamer1.0-plugins-tegra-binaryonly \
     gdbserver \
     boost \
     dtc \
@@ -51,11 +35,10 @@ IMAGE_INSTALL += " \
     swupdate \
     kernel-module-spidev \
     spidev-test \
+    rc-car-nav \
     update-server \
     update-web-server \
-    rc-car-nav \
     python3-core \
-    python3-flask \
     python3-werkzeug \
     python3-jinja2 \
     python3-itsdangerous \
@@ -64,7 +47,27 @@ IMAGE_INSTALL += " \
     avahi-utils \
     rc-car-data-init \
     i2c-tools \
+    v4l-utils \
+    tensorrt-samples \
+    cudnn \
+    cudnn-samples \
+    tegra-mmapi \
+    tegra-mmapi-dev \
+    opencv \
+    opencv-samples \
+    gstreamer1.0-plugins-nvvideo4linux2 \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-plugins-tegra \
+    gstreamer1.0-plugins-tegra-binaryonly \
 "
+
+TOOLCHAIN_HOST_TASK:append = " nativesdk-packagegroup-cuda-sdk-host"
+TOOLCHAIN_TARGET_TASK:append = " tegra-mmapi-dev"
 
 IMAGE_INSTALL:append = " version"
 
@@ -72,9 +75,6 @@ IMAGE_CLASSES += "image_types_tegra"
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
 
-LICENSE_FLAGS_ACCEPTED += "commercial"
-
-IMAGE_CLASSES += "image_types_tegra"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD += "spidev"

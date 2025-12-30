@@ -1,10 +1,14 @@
-UMMARY = "Update server for RC car"
+SUMMARY = "RC Car Navigation and Control Application"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c6808d7433e09d2b717e8d022fd743f3"
 
 SRCREV = "${AUTOREV}"
 SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;protocol=https;branch=main;submodules=1 \
            file://rc-car-nav.service"
+
+# SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;protocol=https;branch=main;submodules=1 \
+#            file://repartition.sh \
+#            file://rc-car-nav.service"
 
 S = "${WORKDIR}/git"
 
@@ -21,11 +25,12 @@ do_install() {
     install -d ${D}/opt/rc-car/${APP_FOLDER}
     install -m 0755 ${B}/src/${APP_NAME} ${D}/opt/rc-car/${APP_FOLDER}/
 
+    # Install reparition script
+    # install -d ${D}/usr/sbin
+    # install -m 0755 ${WORKDIR}/repartition.sh ${D}/usr/sbin/repartition.sh
+
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/${APP_NAME}.service ${D}${systemd_system_unitdir}/
-
-    # Log directory
-    install -d {D}/var/log/
 
     install -d ${D}${sysconfdir}/versions
     version_file=${S}/version.h
@@ -44,7 +49,6 @@ do_install() {
 FILES:${PN} += "/opt/rc-car/${APP_FOLDER}/"
 FILES:${PN} += "${systemd_system_unitdir}/${APP_NAME}.service"
 FILES:${PN} += "${sysconfdir}/versions/${APP_NAME}-version.txt"
-FILES:${PN} += "/var/log/${APP_FOLDER}/"
 
 SYSTEMD_SERVICE:${PN} = "${APP_NAME}.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
