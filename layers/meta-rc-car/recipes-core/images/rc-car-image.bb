@@ -45,7 +45,6 @@ IMAGE_INSTALL += " \
     python3-click \
     avahi-daemon \
     avahi-utils \
-    rc-car-data-init \
     i2c-tools \
     v4l-utils \
     tensorrt-samples \
