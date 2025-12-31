@@ -1,88 +1,37 @@
-DESCRIPTION = "RC Car custom image"
+DESCRIPTION = "RC Car SWUpdate image"
 LICENSE = "MIT"
 
-inherit core-image
+require versions.inc
+inherit rc-car-update-type
 
-IMAGE_INSTALL += " \
-    packagegroup-core-boot \
-    bash \
-    openssh \
-    nano \
-    hostapd \
-    dnsmasq \
-    iproute2 \
-    ethtool \
-    net-tools \
-    tcpdump \
-    procps \
-    systemd \
-    busybox \
-    gdbserver \
-    boost \
-    dtc \
-    networkmanager \
-    networkmanager-nmcli \
-    wpa-supplicant \
-    iw \
-    wireless-regdb-static \
-    linux-firmware \
-    rc-car-eth-setup \
-    libgpiod \
-    libgpiod-tools \
-    python3 \
-    python3-flask \
-    python3-gunicorn \
-    swupdate \
-    kernel-module-spidev \
-    spidev-test \
-    rc-car-nav \
-    update-server \
-    update-web-server \
-    python3-core \
-    python3-werkzeug \
-    python3-jinja2 \
-    python3-itsdangerous \
-    python3-click \
-    avahi-daemon \
-    avahi-utils \
-    i2c-tools \
-    v4l-utils \
-    tensorrt-samples \
-    cudnn \
-    cudnn-samples \
-    tegra-mmapi \
-    tegra-mmapi-dev \
-    opencv \
-    opencv-samples \
-    gstreamer1.0-plugins-nvvideo4linux2 \
-    gstreamer1.0 \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-ugly \
-    gstreamer1.0-libav \
-    gstreamer1.0-plugins-tegra \
-    gstreamer1.0-plugins-tegra-binaryonly \
-"
+# ✅ These MUST be static for BitBake to work
+VERSION := "${OE_VERSION}"
+IMAGE_NAME = "rc-car-update-${MACHINE}-${VERSION}"
+SWUPDATE_OUTPUTIMAGE = "${IMAGE_NAME}.swu"
 
-TOOLCHAIN_HOST_TASK:append = " nativesdk-packagegroup-cuda-sdk-host"
-TOOLCHAIN_TARGET_TASK:append = " tegra-mmapi-dev"
+# ✅ Create timestamped copy AFTER the .swu is built
+python do_timestamped_swu_copy() {
+    import os
+    import datetime
 
-IMAGE_INSTALL:append = " version"
+    deploy_dir = d.getVar('DEPLOY_DIR_IMAGE')
+    orig_filename = d.getVar('SWUPDATE_OUTPUTIMAGE')
+    version = d.getVar('OE_VERSION').replace(" ", "_").replace(":", "_")
+    machine = d.getVar('MACHINE')
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M")
 
-IMAGE_CLASSES += "image_types_tegra"
+    timestamped_filename = f"rc-car-update-{machine}-{version}-{timestamp}.swu"
+    src = os.path.join(deploy_dir, orig_filename)
+    dst = os.path.join(deploy_dir, timestamped_filename)
 
-TOOLCHAIN_TARGET_TASK:append = " boost"
+    bb.note(f"[rc-car-update] Copying {src} -> {dst}")
+    bb.utils.copyfile(src, dst)
 
-LICENSE_FLAGS_ACCEPTED += "commercial"
+    latest_link = os.path.join(deploy_dir, "latest.swu")
+    if os.path.islink(latest_link) or os.path.exists(latest_link):
+        os.remove(latest_link)
+    os.symlink(timestamped_filename, latest_link)
+    bb.note(f"[rc-car-update] Created symlink: latest.swu -> {timestamped_filename}")
+}
 
-KERNEL_MODULE_AUTOLOAD += "spidev"
-
-IMAGE_FSTYPES:append = " tar.gz"
-IMAGE_FSTYPES:append = " tegraflash"
-
-# Enable NM at boot
-SYSTEMD_AUTO_ENABLE:append = " NetworkManager"
-TOOLCHAIN_TARGET_TASK:append = " swupdate-dev"
-
-SYSTEMD_AUTO_ENABLE:append = " NetworkManager-wait-online.service"
+addtask timestamped_swu_copy after do_swuimage
