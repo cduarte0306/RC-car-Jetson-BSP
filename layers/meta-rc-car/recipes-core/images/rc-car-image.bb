@@ -3,12 +3,6 @@ LICENSE = "MIT"
 
 inherit core-image
 
-IMAGE_INSTALL::append = " \
-    rc-car-nav \
-    update-server \
-    update-web-server \
-    "
-
 IMAGE_INSTALL += " \
     packagegroup-core-boot \
     bash \
@@ -41,17 +35,17 @@ IMAGE_INSTALL += " \
     swupdate \
     kernel-module-spidev \
     spidev-test \
+    rc-car-nav \
     update-server \
     update-web-server \
-    rc-car-nav \
     python3-core \
-    python3-flask \
     python3-werkzeug \
     python3-jinja2 \
     python3-itsdangerous \
     python3-click \
     avahi-daemon \
     avahi-utils \
+    i2c-tools \
     v4l-utils \
     tensorrt-samples \
     cudnn \
@@ -80,9 +74,6 @@ IMAGE_CLASSES += "image_types_tegra"
 
 TOOLCHAIN_TARGET_TASK:append = " boost"
 
-LICENSE_FLAGS_ACCEPTED += "commercial"
-
-IMAGE_CLASSES += "image_types_tegra"
 LICENSE_FLAGS_ACCEPTED += "commercial"
 
 KERNEL_MODULE_AUTOLOAD += "spidev"
