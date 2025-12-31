@@ -17,7 +17,7 @@ ROOTFS_DEVICE_PATH ?= "/dev/disk/by-partlabel"
 
 # By default, use demo-image-base as the base image.
 # Redefine in local.conf if you'd like to use a different base image.
-SWUPDATE_CORE_IMAGE_NAME ?= "rc-car-image"
+SWUPDATE_CORE_IMAGE_NAME ?= "rc-car-base"
 
 ROOTFS_FILENAME ?= "${SWUPDATE_CORE_IMAGE_NAME}-${MACHINE}.rootfs.tar.gz"
 
