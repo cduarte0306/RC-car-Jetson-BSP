@@ -1,0 +1,22 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/pinctrl/pinctrl-tegra.h>
+
+/ {
+	fragment@0 {
+		target = <&jetson_io_pinmux>;
+		__overlay__ {
+			hdr40-pin31 {
+				nvidia,pins = "soc_gpio33_pq6";
+				nvidia,function = "gp";
+				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+				/delete-property/ nvidia,pin-group;
+				/delete-property/ nvidia,io-high-voltage;
+				/delete-property/ nvidia,lpdr;
+			};
+		};
+	};
+};

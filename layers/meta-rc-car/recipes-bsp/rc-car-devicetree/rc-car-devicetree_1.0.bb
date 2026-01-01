@@ -9,7 +9,16 @@ COMPATIBLE_MACHINE = "rc-car-machine"
 
 DEPENDS += "nvidia-kernel-oot"
 
-SRC_URI = "file://rc-car-device-tree-oe4t.dts"
+SRC_URI = " \
+    file://rc-car-device-tree-oe4t.dts \
+    file://rc-car-overlay.dts \
+"
+
+# Build both the base DTB and our out-of-tree DTBO overlay.
+DT_FILES = " \
+    rc-car-device-tree-oe4t.dtb \
+    rc-car-overlay.dtbo \
+"
 
 DT_INCLUDE = " \
     ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/tegra/nv-public \
