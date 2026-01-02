@@ -1,18 +1,17 @@
+DESCRIPTION = "RC Car Navigation and Control Application"
+
 SUMMARY = "RC Car Navigation and Control Application"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c6808d7433e09d2b717e8d022fd743f3"
 
-SRCREV = "${AUTOREV}"
+require recipes-rc-car/rc-car-common.inc
+
 SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;protocol=https;branch=main;submodules=1 \
            file://rc-car-nav.service"
 
-# SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;protocol=https;branch=main;submodules=1 \
-#            file://repartition.sh \
-#            file://rc-car-nav.service"
-
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake-native boost systemd opencv"
+DEPENDS = "cmake-native boost systemd opencv libgpiod"
 
 inherit cmake pkgconfig systemd
 
