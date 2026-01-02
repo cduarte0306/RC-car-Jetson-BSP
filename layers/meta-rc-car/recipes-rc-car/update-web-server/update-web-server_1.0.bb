@@ -2,8 +2,7 @@ SUMMARY = "Web server for RC car"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
-SRCREV = "${AUTOREV}"
-BRANCH = "main"
+require recipes-rc-car/rc-car-common.inc
 
 SRC_URI = "git://github.com/cduarte0306/RC-Car-Web-Server.git;protocol=https;branch=${BRANCH} \
            file://rc-car-web-server.service"
