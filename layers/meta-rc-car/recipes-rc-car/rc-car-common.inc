@@ -9,7 +9,7 @@
 
 # RC Car Navigation and Control
 BRANCH:pn-rc-car-nav = "main"
-SRCREV:pn-rc-car-nav = "926167854387d7566c7e6bed44336510c391f6ee"
+SRCREV:pn-rc-car-nav = "5f74231ab04ad96242831a125e10930756e21222"
 
 # Update Web Server
 BRANCH:pn-update-web-server = "main"
