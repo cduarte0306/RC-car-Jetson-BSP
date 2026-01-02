@@ -1,21 +1,32 @@
 /dts-v1/;
 /plugin/;
 
-#include <dt-bindings/pinctrl/pinctrl-tegra.h>
+/*
+ * RC Car HDR40 overlay:
+ * - Include NVIDIA's hdr40 overlay .dtsi (brings in SPI/I2C/UART pinmux defaults)
+ * - Override only the pins we need (31/32)
+ */
+
+#include <dt-bindings/tegra234-p3767-0000-common.h>
+#include "tegra234-p3767-0000-common-hdr40.dtsi"
 
 / {
-	fragment@0 {
-		target = <&jetson_io_pinmux>;
+	compatible = JETSON_COMPATIBLE;
+
+	fragment@2 {
+		target = <&pinmux>;
 		__overlay__ {
-			hdr40-pin31 {
-				nvidia,pins = "soc_gpio33_pq6";
-				nvidia,function = "gp";
-				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
-				nvidia,tristate = <TEGRA_PIN_DISABLE>;
-				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
-				/delete-property/ nvidia,pin-group;
-				/delete-property/ nvidia,io-high-voltage;
-				/delete-property/ nvidia,lpdr;
+			exp-header-pinmux {
+				hdr40-pin31 {
+					nvidia,pins = "soc_gpio33_pq6";
+					nvidia,function = "gp";
+					nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+					nvidia,tristate = <TEGRA_PIN_DISABLE>;
+					nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+					/delete-property/ nvidia,pin-group;
+					/delete-property/ nvidia,io-high-voltage;
+					/delete-property/ nvidia,lpdr;
+				};
 			};
 		};
 	};

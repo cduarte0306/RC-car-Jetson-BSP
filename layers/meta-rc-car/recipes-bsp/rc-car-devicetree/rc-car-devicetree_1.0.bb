@@ -26,6 +26,7 @@ DT_INCLUDE = " \
     ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/t23x/nv-public/include/nvidia-oot \
     ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/t23x/nv-public/include/platforms \
     ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/t23x/nv-public \
+    ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/t23x/nv-public/overlay \
     ${RECIPE_SYSROOT}/usr/src/device-tree/nvidia/t23x/nv-public/nv-platform \
     ${S} \
     ${KERNEL_INCLUDE} \
