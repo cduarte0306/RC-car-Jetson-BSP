@@ -30,4 +30,12 @@
 			};
 		};
 	};
+
+	/* Enable the controller backing HDR40 pins 3/5 (gen8_i2c / "i2c8"). */
+	fragment@3 {
+		target-path = "/bus@0/i2c@31e0000";
+		__overlay__ {
+			status = "okay";
+		};
+	};
 };

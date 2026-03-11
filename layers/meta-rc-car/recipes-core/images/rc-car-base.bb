@@ -63,10 +63,12 @@ IMAGE_INSTALL += " \
     gstreamer1.0-libav \
     gstreamer1.0-plugins-tegra \
     gstreamer1.0-plugins-tegra-binaryonly \
+    libnvvpi3 \
 "
 
 TOOLCHAIN_HOST_TASK:append = " nativesdk-packagegroup-cuda-sdk-host"
 TOOLCHAIN_TARGET_TASK:append = " tegra-mmapi-dev"
+TOOLCHAIN_TARGET_TASK:append = " libnvvpi3-dev "
 
 IMAGE_INSTALL:append = " version"
 
