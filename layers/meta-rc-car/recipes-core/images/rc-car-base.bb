@@ -31,6 +31,7 @@ IMAGE_INSTALL += " \
     libgpiod-tools \
     python3 \
     python3-flask \
+    python3-flask-sock \
     python3-gunicorn \
     swupdate \
     kernel-module-spidev \

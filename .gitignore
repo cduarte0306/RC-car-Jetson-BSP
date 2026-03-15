@@ -4,4 +4,3 @@ build/
 *.log
 *.lock
 *.sock*
-/.vscode
