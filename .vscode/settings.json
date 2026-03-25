@@ -1,0 +1,20 @@
+{
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/layers/poky/bitbake/lib",
+        "${workspaceFolder}/layers/poky/meta/lib"
+    ],
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/layers/poky/bitbake/lib",
+        "${workspaceFolder}/layers/poky/meta/lib"
+    ],
+    "files.associations": {
+        "*.conf": "bitbake",
+        "*.inc": "bitbake"
+    },
+    "bitbake.sdkImage": "",
+    "bitbake.sshTarget": "root@192.168.1.10",
+    "bitbake.pathToEnvScript": "${workspaceFolder}/setup-yocto-env.sh",
+    "bitbake.pathToBuildFolder": "${workspaceFolder}/build",
+    "bitbake.pathToBitbakeFolder": "${workspaceFolder}/layers/poky/bitbake",
+    "bitbake.workingDirectory": "${workspaceFolder}"
+}
