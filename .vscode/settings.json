@@ -1,5 +1,6 @@
 {
     "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/sources/poky/bitbake/lib",
         "${workspaceFolder}/layers/poky/bitbake/lib",
         "${workspaceFolder}/layers/poky/meta/lib"
     ],

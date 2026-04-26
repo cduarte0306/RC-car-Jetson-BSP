@@ -49,6 +49,10 @@ IMAGE_INSTALL += " \
     i2c-tools \
     v4l-utils \
     tensorrt-samples \
+    tensorrt-core \
+    tensorrt-plugins-prebuilt \
+    tegra-libraries-cuda \
+    cuda-cudart \
     cudnn \
     cudnn-samples \
     tegra-mmapi \

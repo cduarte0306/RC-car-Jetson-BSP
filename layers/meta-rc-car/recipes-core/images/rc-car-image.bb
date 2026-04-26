@@ -5,7 +5,7 @@ require versions.inc
 inherit rc-car-update-type
 
 # ✅ These MUST be static for BitBake to work
-VERSION := "${OE_VERSION}"
+VERSION = "${OE_VERSION}"
 IMAGE_NAME = "rc-car-update-${MACHINE}-${VERSION}"
 SWUPDATE_OUTPUTIMAGE = "${IMAGE_NAME}.swu"
 
@@ -35,3 +35,4 @@ python do_timestamped_swu_copy() {
 }
 
 addtask timestamped_swu_copy after do_swuimage
+do_timestamped_swu_copy[nostamp] = "1"

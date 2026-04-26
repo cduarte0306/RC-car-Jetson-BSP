@@ -20,13 +20,22 @@ EXTRA_OECMAKE = ""
 APP_FOLDER = "rc-car-nav"
 APP_NAME = "rc-car-nav"
 
+
+do_download_model() {
+    # Pull onnx from repo: https://github.com/cduarte0306/AnyLaneNET/releases/download/v1.0/lanenet.onnx
+    wget -O ${WORKDIR}/lanenet.onnx https://github.com/cduarte0306/AnyLaneNET/releases/download/v1.0/lanenet.onnx
+}
+
+addtask download_model after do_fetch before do_install
+do_download_model[network] = "1"
+
 do_install() {
+    # Install model in rootfs at /home/models/lanenet
+    install -d ${D}/home/models/lanenet
+    install -m 0644 ${WORKDIR}/lanenet.onnx ${D}/home/models/lanenet/lanenet.onnx
+
     install -d ${D}/opt/rc-car/${APP_FOLDER}
     install -m 0755 ${B}/src/${APP_NAME} ${D}/opt/rc-car/${APP_FOLDER}/
-
-    # Install reparition script
-    # install -d ${D}/usr/sbin
-    # install -m 0755 ${WORKDIR}/repartition.sh ${D}/usr/sbin/repartition.sh
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/${APP_NAME}.service ${D}${systemd_system_unitdir}/
@@ -48,6 +57,8 @@ do_install() {
 FILES:${PN} += "/opt/rc-car/${APP_FOLDER}/"
 FILES:${PN} += "${systemd_system_unitdir}/${APP_NAME}.service"
 FILES:${PN} += "${sysconfdir}/versions/${APP_NAME}-version.txt"
+FILES:${PN} += "/usr/share/rc-car/models/"
+FILES:${PN} += "/home/models/lanenet/lanenet.onnx"
 
 SYSTEMD_SERVICE:${PN} = "${APP_NAME}.service"
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
