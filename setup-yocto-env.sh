@@ -30,12 +30,13 @@ __OLD_U="$(set +o | grep -E '^set -o nounset' || true)"
 set +e
 set +u
 # shellcheck disable=SC1090
-. "$POKY_INIT" "$BUILD_DIR"
+. "$POKY_INIT" "$BUILD_DIR" > /dev/null
 __RC=$?
 # restore options
 eval "$__OLD_E"
 eval "$__OLD_U"
 [ $__RC -eq 0 ] || die "oe-init-build-env failed (rc=$__RC). Check TEMPLATECONF or your layer layout."
+cd "$REPO_ROOT"
 
 # ---- bblayers.conf (keep ${TOPDIR} literal) ----
 cat > conf/bblayers.conf <<'EOF'
@@ -94,4 +95,6 @@ EOF
 
 echo "Yocto environment ready."
 echo "  BUILDDIR: ${BUILDDIR}"
-echo "Run: bitbake-layers show-layers"
+echo ""
+echo "To build the RC car image, run:"
+echo "  bitbake rc-car-image"
