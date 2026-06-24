@@ -7,6 +7,7 @@ Wants=network-online.target
 ExecStart=/opt/rc-car/update-server/rc-car-updater
 StandardOutput=append:/var/log/rc-car-updater.log
 StandardError=append:/var/log/rc-car-updater.err
+LimitCORE=infinity
 Restart=always
 
 [Install]
