@@ -10,11 +10,11 @@ SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-Update-Server.git;protocol=http
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake-native swupdate boost"
+DEPENDS = "cmake-native swupdate boost nlohmann-json"
 
 inherit cmake pkgconfig systemd
 
-EXTRA_OECMAKE = ""
+EXTRA_OECMAKE = "-DOE_BUILD=ON"
 
 do_install() {
     install -d ${D}/opt/rc-car/update-server
