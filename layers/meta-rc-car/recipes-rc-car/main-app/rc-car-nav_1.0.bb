@@ -11,7 +11,7 @@ SRC_URI = "gitsm://github.com/cduarte0306/RC-Car-navigation-and-control.git;prot
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "cmake-native boost systemd opencv libgpiod libnvvpi3 tegra-mmapi"
+DEPENDS = "cmake-native boost systemd opencv libgpiod libnvvpi3 tegra-mmapi tensorrt-core tensorrt-plugins-prebuilt"
 
 inherit cmake pkgconfig systemd cuda
 

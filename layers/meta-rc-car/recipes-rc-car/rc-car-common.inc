@@ -9,15 +9,15 @@
 
 # RC Car Navigation and Control
 BRANCH:pn-rc-car-nav = "main"
-SRCREV:pn-rc-car-nav = "119e40f367a475d3e618be932cdccf87c1123985"
-TAG:pn-rc-car-nav = "v1.03.0005"
+SRCREV:pn-rc-car-nav = "cf9dbd43a57ce345a50acb8bc93b540eac4103f2"
+TAG:pn-rc-car-nav = "V1.04.0000"
 
 # Update Web Server
 BRANCH:pn-update-web-server = "main"
-SRCREV:pn-update-web-server = "4d56b1e6946ed660d609384caca80239245284be"
-TAG:pn-update-web-server = "v1.00.0005"
+SRCREV:pn-update-web-server = "94c12ee9d4a1bfd7bf6d53d4302864134cf6a61a"
+TAG:pn-update-web-server = "V1.01.0000"
 
 # Update Server
 BRANCH:pn-update-server = "main"
-SRCREV:pn-update-server = "885a8760b011fde7e976a6698bde17c8e03b798d"
-TAG:pn-update-server = "v1.00.0003"
+SRCREV:pn-update-server = "002148bbc5742ead69adb9f7848279ddd1701c5b"
+TAG:pn-update-server = "V1.01.0000"
